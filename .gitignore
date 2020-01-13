@@ -9,7 +9,7 @@ __pycache__/
 *.jpg
 *.png
 venv/
-app/migrations/*
+*/migrations/*
 
 ### Project specific ###
 settings_local.py
