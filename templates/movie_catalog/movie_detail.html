@@ -339,7 +339,7 @@
                                 {{ movie.title }}
                             </h3>
                             <h5 class="editContent"></h5>
-                            <ul>
+                            <div>
                                 <li style="list-style: none">
                                     <span><b>Год:</b> {{ movie.year }}</span></li>
                                 <li style="list-style: none">
@@ -351,13 +351,13 @@
                                 <li style="list-style: none">
                                     <span><b>Режиссер:</b>
                                         {% for director in movie.directors.all %}
-                                            {{ director.name }}
+                                            {{ director.get_full_name }}
                                         {% endfor %}
                                     </span>
                                 </li>
                                 <li style="list-style: none"><span><b>Актеры:</b>
                                     {% for actor in movie.actors.all %}
-                                        {{ actor.name }}
+                                        {{ actor.get_full_name }}
                                     {% endfor %}
                                 </span>
                                 </li>
@@ -422,6 +422,7 @@
                                     </div>
                                     <div class="clearfix"></div>
                                 </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row sub-para-w3layouts mt-5">

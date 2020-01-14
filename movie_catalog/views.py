@@ -1,19 +1,19 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic.base import View
+from django.views.generic import ListView, DetailView
 
 from .models import Movie
 
 
-class MovieListView(View):
+class MovieListView(ListView):
     """Список фильмов"""
-    def get(self, request):
-        movies = Movie.objects.all()
-        return render(request, "movie_catalog/movie_list.html", {"movie_list": movies})
+    model = Movie
+    queryset = Movie.objects.filter(draft=False)
+    template_name = "movie_catalog/movie_list.html"
 
 
-class MovieDetailView(View):
+class MovieDetailView(DetailView):
     """Описание фильма"""
-    def get(self, request, slug):
-        movie = get_object_or_404(Movie, slug=slug)
-        return render(request, "movie_catalog/movie_detail.html", {"movie": movie})
+    model = Movie
+    slug_field = "slug"
+
 

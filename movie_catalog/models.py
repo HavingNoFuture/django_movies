@@ -33,10 +33,13 @@ class Person(models.Model):
     description = models.TextField("Описание")
     image = models.ImageField("Изображение", upload_to="actors/")
 
-    def __str__(self):
-        name = f"{self.first_name} {self.second_name} {self.last_name}" if self.second_name else \
+    def get_full_name(self):
+        full_name = f"{self.first_name} {self.second_name} {self.last_name}" if self.second_name else \
             f"{self.first_name} {self.last_name}"
-        return name
+        return full_name
+
+    def __str__(self):
+        return self.get_full_name()
 
     class Meta:
         verbose_name = "Актеры и режиссеры"
@@ -96,12 +99,15 @@ class Movie(models.Model):
     category = models.ForeignKey(
         Category, verbose_name="Категория", on_delete=models.SET_NULL, null=True
     )
-    url = models.SlugField(max_length=120, unique=True)
     draft = models.BooleanField("Черновик", default=False)
     slug = models.SlugField(blank=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('movie_detail', kwargs={'slug': self.slug})
+
 
     class Meta:
         verbose_name = "Фильм"
