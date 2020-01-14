@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from movies_catalog.models import Person, Genre, Category, Movie, MovieShots, RatingStars, Rating, Reviews
+from movie_catalog.models import Person, Genre, Category, Movie, MovieShots, RatingStars, Rating, Reviews
 
 
 admin.site.register(Category)
