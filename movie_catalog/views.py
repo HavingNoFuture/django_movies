@@ -13,7 +13,7 @@ class MovieListView(View):
 
 class MovieDetailView(View):
     """Описание фильма"""
-    def get(self, request, pk):
-        movie = get_object_or_404(Movie, id=pk)
+    def get(self, request, slug):
+        movie = get_object_or_404(Movie, slug=slug)
         return render(request, "movie_catalog/movie_detail.html", {"movie": movie})
 

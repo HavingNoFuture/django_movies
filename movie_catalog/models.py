@@ -1,7 +1,27 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.text import slugify
+from django.db.models.signals import pre_save
 
 from datetime import date
+
+from transliterate import translit
+
+
+def pre_save_slug(sender, instance, *args, **kwargs):
+    """
+    Функция-генератор слага на основе названия.
+    Использует сигнал presave к базе данных.
+    Пытается создать слаг-транслит русского названия, иначе делать слаг из английского.
+    Обязательные требования: у модели должны быть поля title и slug.
+    Примеры: Терминатор(id:1) -> 1-terminator
+    Terminator 2(id:2) -> 2-terminator-2
+    """
+    if not instance.slug:
+        try:
+            instance.slug = f"{instance.pk}-{slugify(translit(instance.title, reversed=True))}"
+        except:
+            instance.slug = f"{instance.pk}-{slugify(instance.title)}"
 
 
 class Person(models.Model):
@@ -78,6 +98,7 @@ class Movie(models.Model):
     )
     url = models.SlugField(max_length=120, unique=True)
     draft = models.BooleanField("Черновик", default=False)
+    slug = models.SlugField(blank=True)
 
     def __str__(self):
         return self.title
@@ -85,6 +106,9 @@ class Movie(models.Model):
     class Meta:
         verbose_name = "Фильм"
         verbose_name_plural = "Фильмы"
+
+
+pre_save.connect(pre_save_slug, sender=Movie)
 
 
 class MovieShots(models.Model):
