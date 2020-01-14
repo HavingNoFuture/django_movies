@@ -37,7 +37,6 @@ class Genre(models.Model):
         verbose_name_plural = "Жанры"
 
 
-
 class Category(models.Model):
     """Категории"""
     name = models.CharField("Категория", max_length=150)
@@ -53,7 +52,6 @@ class Category(models.Model):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-
 
 
 class Movie(models.Model):
@@ -73,7 +71,7 @@ class Movie(models.Model):
         "Сборы в США", default=0, help_text="указывать сумму в долларах"
     )
     fees_in_world = models.PositiveIntegerField(
-        "Сборы в США", default=0, help_text="указывать сумму в долларах"
+        "Сборы в мире", default=0, help_text="указывать сумму в долларах"
     )
     category = models.ForeignKey(
         Category, verbose_name="Категория", on_delete=models.SET_NULL, null=True
@@ -130,7 +128,7 @@ class Rating(models.Model):
         verbose_name_plural = "Рейтинги"
 
 
-class Review(models.Model):
+class Reviews(models.Model):
     """Отзывы"""
     email = models.EmailField()
     name = models.CharField("Имя", max_length=90)
