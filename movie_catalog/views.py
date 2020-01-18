@@ -27,6 +27,9 @@ class AddReview(View):
         if form.is_valid():
             form = form.save(commit=False)
             form.movie_id = pk
+            parent = int(request.POST.get("parent", None))
+            if parent:
+                form.parent_id = parent
             form.save()
         print(request.POST)
         return redirect(movie.get_absolute_url())
