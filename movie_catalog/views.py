@@ -16,7 +16,6 @@ class MovieListView(ListView):
 class MovieDetailView(DetailView):
     """Описание фильма"""
     model = Movie
-    slug_field = "slug"
 
 
 class AddReview(View):
