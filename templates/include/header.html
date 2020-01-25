@@ -1,9 +1,10 @@
+{% load movie_catalog_tags %}
 <header class="header">
   <div class="container-fluid px-lg-5">
     <!-- nav -->
     <nav class="py-4">
       <div id="logo">
-        <h1><a href="index.html" class="editContent"
+        <h1><a href="{% url 'movie_list' %}" class="editContent"
              style="outline: none; outline-offset: -2px; cursor: inherit; color: rgb(255, 255, 255); font-size: 40px; background-color: rgba(0, 0, 0, 0); font-family: &quot;Source Sans Pro&quot;, sans-serif;">DjangoMovie</a>
         </h1>
       </div>
@@ -20,9 +21,10 @@
                         aria-hidden="true"></span></a>
           <input type="checkbox" id="drop-2">
           <ul>
-            <li><a href="moviesingle.html">Фильмы</a></li>
-            <li><a href="moviesingle.html">Сериалы</a></li>
-            <li><a href="moviesingle.html">Мультфильмы</a></li>
+	          {% get_categories as categories %}
+	          {% for category in categories %}
+            <li><a href="moviesingle.html">{{ category.name }}</a></li>
+	          {% endfor %}
           </ul>
         </li>
         <li><a href="contact.html"

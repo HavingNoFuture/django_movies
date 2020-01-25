@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 
-from movie_catalog.models import Movie
+from movie_catalog.models import Movie, Category
 from movie_catalog.forms import ReviewForm
 
 
@@ -10,7 +10,11 @@ class MovieListView(ListView):
     """Список фильмов"""
     model = Movie
     queryset = Movie.objects.filter(draft=False)
-    template_name = "movie_catalog/movie_list.html"
+
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super().get_context_data(*args, **kwargs)
+    #     context["categories"] = Category.objects.all()
+    #     return context
 
 
 class MovieDetailView(DetailView):
