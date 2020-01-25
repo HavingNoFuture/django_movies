@@ -12,7 +12,7 @@ class MovieAdminForm(forms.ModelForm):
 
     class Meta:
         model = Movie
-        fields = '__all__'
+        fields = "__all__"
 
 
 @admin.register(Category)
@@ -33,7 +33,7 @@ class MovieShotsInline(admin.TabularInline):
     readonly_fields = ("get_image", )
 
     def get_image(self, obj):
-        return mark_safe(f'<img src={obj.image.url} width="100" height="110">')
+        return mark_safe(f"<img src={obj.image.url} width='100' height='110'>")
 
     get_image.short_description = "Изображение"
 
@@ -44,6 +44,7 @@ class MovieAdmin(admin.ModelAdmin):
     list_display_links = ("title", "id")
     list_filter = ("category", "year")
     search_fields = ("title", "category__name", "year")
+    actions = ["publish", "unpublish"]
     inlines = [MovieShotsInline, ReviewsInline]
     save_on_top = True
     save_as = True
@@ -76,7 +77,31 @@ class MovieAdmin(admin.ModelAdmin):
     )
 
     def get_image(self, obj):
-        return mark_safe(f'<img src={obj.poster.url} width="50" height="60">')
+        return mark_safe(f"<img src={obj.poster.url} width='50' height='60'>")
+
+    def unpublish(self, request, queryset):
+        """Снять с публикации"""
+        row_update = queryset.update(draft=True)
+        if row_update == 1:
+            message = "1 запись обновлена"
+        else:
+            message = f"{row_update} записей обновлены"
+        self.message_user(request, f"{message}")
+
+    def publish(self, request, queryset):
+        """Снять с публикации"""
+        row_update = queryset.update(draft=False)
+        if row_update == 1:
+            message = "1 запись обновлена"
+        else:
+            message = f"{row_update} записей обновлены"
+        self.message_user(request, f"{message}")
+
+    unpublish.short_description = "Снять с публикации"
+    unpublish.allowed_permissions = ("change", )
+
+    publish.short_description = "Опубликовать"
+    publish.allowed_permissions = ("change", )
 
     get_image.short_description = "Постер"
 
@@ -99,7 +124,7 @@ class PersonAdmin(admin.ModelAdmin):
     readonly_fields = ("get_image", )
 
     def get_image(self, obj):
-        return mark_safe(f'<img src={obj.image.url} width="50" height="60">')
+        return mark_safe(f"<img src={obj.image.url} width='50' height='60'>")
 
     get_image.short_description = "Изображение"
 
