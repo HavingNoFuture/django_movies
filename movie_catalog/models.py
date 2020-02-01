@@ -1,27 +1,59 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 
 from datetime import date
 
 from transliterate import translit
 
 
-def pre_save_slug(sender, instance, *args, **kwargs):
+# Presave signals
+
+def post_save_slug_film(sender, instance, *args, **kwargs):
     """
     Функция-генератор слага на основе названия.
-    Использует сигнал presave к базе данных.
+    Использует сигнал postsave к базе данных.
     Пытается создать слаг-транслит русского названия, иначе делать слаг из английского.
     Обязательные требования: у модели должны быть поля title и slug.
     Примеры: Терминатор(id:1) -> 1-terminator
-    Terminator 2(id:2) -> 2-terminator-2
+    Terminator 2(id:2) -> 2-terminator
     """
     if not instance.slug:
         try:
             instance.slug = f"{instance.pk}-{slugify(translit(instance.title, reversed=True))}"
         except:
             instance.slug = f"{instance.pk}-{slugify(instance.title)}"
+        instance.save()
+
+
+def post_save_slug_person(sender, instance, *args, **kwargs):
+    """
+    Функция-генератор слага на основе имени и фамилии.
+    Использует сигнал postsave к базе данных.
+    Пытается создать слаг-транслит русских имени и фамилии, иначе делает слаг из английского.
+    Обязательные требования: у модели должны быть поля first_name, last_name и slug.
+    Пример: Арнольд Шварцнеггер(id:1) -> 1-arnold-shvartsnegger
+    """
+    if not instance.slug:
+        try:
+            instance.slug = f"{instance.pk}-" \
+                f"{slugify(translit(f'{instance.first_name} {instance.last_name}', reversed=True))}"
+        except:
+            instance.slug = f"{instance.pk}-{slugify(f'{instance.first_name} {instance.last_name}')}"
+        instance.save()
+
+# Models
+
+class Country(models.Model):
+    name = models.CharField("Имя", max_length=90)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Страна"
+        verbose_name_plural = "Страны"
 
 
 class Person(models.Model):
@@ -29,14 +61,26 @@ class Person(models.Model):
     first_name = models.CharField("Имя", max_length=90)
     last_name = models.CharField("Фамилия", max_length=90)
     second_name = models.CharField("Отчество", max_length=90, blank=True)
-    age = models.PositiveSmallIntegerField("Возраст", default=0)
+    countries = models.ManyToManyField(Country, verbose_name="страны", related_name="person_country")
+    date_of_birthday = models.DateField("Дата рождния")
+    date_of_death = models.DateField("Дата смерти", blank=True, null=True, default=None)
     description = models.TextField("Описание")
     image = models.ImageField("Изображение", upload_to="actors/")
+    slug = models.SlugField(blank=True)
+
+    def get_age(self):
+        if self.date_of_death:
+            return (self.date_of_death - self.date_of_birthday).days // 365
+        else:
+            return (date.today() - self.date_of_birthday).days // 365
 
     def get_full_name(self):
         full_name = f"{self.first_name} {self.second_name} {self.last_name}" if self.second_name else \
             f"{self.first_name} {self.last_name}"
         return full_name
+
+    def get_absolute_url(self):
+        return reverse('person_detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.get_full_name()
@@ -44,6 +88,9 @@ class Person(models.Model):
     class Meta:
         verbose_name = "Актеры и режиссеры"
         verbose_name_plural = "Актеры и режиссеры"
+
+
+post_save.connect(post_save_slug_person, sender=Person)
 
 
 class Genre(models.Model):
@@ -84,9 +131,9 @@ class Movie(models.Model):
     description = models.TextField("Описание")
     poster = models.ImageField("Постер", upload_to="movies/")
     year = models.PositiveIntegerField("Дата выхода", default=2019)
-    country = models.CharField("Страна", max_length=90)
-    directors = models.ManyToManyField(Person, verbose_name="режиссеры", related_name="film_director")
-    actors = models.ManyToManyField(Person, verbose_name="актеры", related_name="film_actor")
+    countries = models.ManyToManyField(Country, verbose_name="страны", related_name="movie_country", blank=True)
+    directors = models.ManyToManyField(Person, verbose_name="режиссеры", related_name="movie_director")
+    actors = models.ManyToManyField(Person, verbose_name="актеры", related_name="movie_actor")
     genres = models.ManyToManyField(Genre, verbose_name="жанры")
     world_premier = models.DateField("Премьера в мире", default=date.today)
     budget = models.PositiveIntegerField("Бюджет", default=0, help_text="указывать сумму в долларах")
@@ -116,7 +163,7 @@ class Movie(models.Model):
         verbose_name_plural = "Фильмы"
 
 
-pre_save.connect(pre_save_slug, sender=Movie)
+post_save.connect(post_save_slug_film, sender=Movie)
 
 
 class MovieShots(models.Model):

@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 
-from movie_catalog.models import Movie, Category
+from movie_catalog.models import Movie, Category, Person
 from movie_catalog.forms import ReviewForm
 
 
@@ -38,3 +38,6 @@ class AddReview(View):
         return redirect(movie.get_absolute_url())
 
 
+class PersonDetailView(DetailView):
+    """Описание актера или режиссера"""
+    model = Person

@@ -4,7 +4,7 @@ from django import forms
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
-from movie_catalog.models import Person, Genre, Category, Movie, MovieShots, RatingStars, Rating, Reviews
+from movie_catalog.models import Person, Genre, Category, Movie, MovieShots, RatingStars, Rating, Reviews, Country
 
 
 class MovieAdminForm(forms.ModelForm):
@@ -56,20 +56,20 @@ class MovieAdmin(admin.ModelAdmin):
            "fields": (("title", "tagline"), )
         }),
         (None, {
-            "fields": (("genres", "category"),)
+            "fields": (("genres", "category", "countries"),)
         }),
         (None, {
             "fields": ("description", ("poster", "get_image"), )
         }),
         (None, {
-            "fields": (("year", "world_premier", "country"), )
+            "fields": (("year", "world_premier"), )
         }),
         (None, {
             "fields": (("budget", "fees_in_usa", "fees_in_world"), )
         }),
         ("Persons", {
             "classes": ("collapse", ),
-            "fields": (("actors", "directors"), )
+            "fields": (("directors", "actors"), )
         }),
         ("Options", {
             "fields": (("slug", "draft"),)
@@ -117,9 +117,8 @@ class RewievsAdmin(admin.ModelAdmin):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ("id", "first_name", "last_name", "second_name", "age", "get_image")
+    list_display = ("id", "first_name", "last_name", "second_name", "get_age", "get_image")
     list_display_links = ("last_name", "first_name", "id")
-    list_filter = ("age", )
     search_fields = ("first_name", "last_name", "second_name")
     readonly_fields = ("get_image", )
 
@@ -156,6 +155,11 @@ class RatingAdmin(admin.ModelAdmin):
     list_filter = ("movie", "ip", "star")
     search_fields = ("ip", "email")
     readonly_fields = ("ip", "movie", "star")
+
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.site_title = "Django Movies"

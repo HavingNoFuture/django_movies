@@ -1,0 +1,105 @@
+{% extends "./base.html" %}
+{% load static %}
+
+{% block title %}{{ person.get_full_name|title }}{% endblock title %}
+
+{% block container %}
+<div class="container py-md-3">
+{% endblock container %}
+
+{% block sidebar %}
+<div class="side-bar col-lg-4">
+{% endblock sidebar%}
+
+
+{% block movie %}
+<div class="left-ads-display col-lg-8">
+  <div class="row">
+    <div class="desc1-left col-md-6">
+      <img src="{{ person.image.url }}" class="img-fluid" alt="">
+    </div>
+    <div class="desc1-right col-md-6 pl-lg-4">
+      <h3 class="editContent" style="outline: none; cursor: inherit;">
+        {{ person.get_full_name }}
+      </h3>
+      <h5 class="editContent"></h5>
+      <ul>
+        <li>
+          <span><b>Дата рождения:</b> {{ person.date_of_birthday }} ({{ person.get_age }} лет)</span>
+        </li>
+        <li>
+          <span><b>Страна:</b>
+	          {% for country in person.countries.all %}
+	          {{ country }}{% if not forloop.last %}, {% endif %}
+	          {% endfor %}
+          </span>
+        </li>
+	      {% if person.date_of_death %}
+        <li>
+          <span><b>Дата смерти:</b> {{ person.date_of_death }}</span>
+        </li>
+	      {% endif %}
+	      {% if person.movie_director.all %}
+        <li><ul><span><b>Режиссер:</b>
+          {% for movie in person.movie_director.all %}
+	        <li><a href="{{ movie.get_absolute_url }}">{{ movie.title|title }} ({{ movie.year }})</a></li>
+          {% endfor %}
+          </span>
+          </ul>
+        </li>
+	      {% endif %}
+	      {% if person.movie_actor.all %}
+        <li><ul><span><b>Актер:</b>
+          {% for movie in person.movie_actor.all %}
+	        <li><a href="{{ movie.get_absolute_url }}">{{ movie.title|title }} ({{ movie.year }})</a></li>
+          {% endfor %}
+          </span>
+          </ul>
+        </li>
+	      {% endif %}
+        <hr>
+        <div class="share-desc">
+          <div class="share">
+            <h4 class="editContent"
+              style="outline: none; cursor: inherit;">
+              Share:</h4>
+            <ul class="w3layouts_social_list list-unstyled">
+              <li>
+                <a href="#" class="w3pvt_facebook editContent"
+                   style="outline: none; cursor: inherit;">
+                <span class="fa fa-facebook-f"
+                    style="outline: none; cursor: inherit;"></span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="w3pvt_twitter editContent"
+                   style="outline: none; cursor: inherit;">
+                <span class="fa fa-twitter"
+                    style="outline: none; cursor: inherit;"></span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="w3pvt_dribble editContent"
+                   style="outline: none; cursor: inherit;">
+                <span class="fa fa-dribbble"
+                    style="outline: none; cursor: inherit;"></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </ul>
+    </div>
+  </div>
+  <div class="row sub-para-w3layouts mt-5" style="display: block">
+
+    <h3 class="shop-sing editContent">
+      О личности. {{ person.get_full_name }}
+    </h3>
+    <p class="editContent">
+      {{ movie.description|safe }}
+    </p>
+  </div>
+</div>
+{% endblock movie %}
