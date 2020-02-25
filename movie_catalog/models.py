@@ -202,9 +202,13 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.movie} - {self.star}"
 
+    def get_average_rating(self):
+        return Rating.objects.all().aggregate(models.Avg('star__value'))['star__value__avg']
+
     class Meta:
         verbose_name = "Рейтинг"
         verbose_name_plural = "Рейтинги"
+        ordering = ("-star",)
 
 
 class Reviews(models.Model):

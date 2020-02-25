@@ -154,7 +154,7 @@ class RatingAdmin(admin.ModelAdmin):
     list_display_links = ("ip", "id")
     list_filter = ("movie", "ip", "star")
     search_fields = ("ip", "email")
-    readonly_fields = ("ip", "movie", "star")
+    # readonly_fields = ("ip", "movie", "star")
 
 
 @admin.register(Country)
