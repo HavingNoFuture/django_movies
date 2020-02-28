@@ -4,17 +4,8 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import View
 
-from movie_catalog.models import Movie, Person, Genre, Rating
+from movie_catalog.models import Movie, Person, Genre, Rating, get_client_ip
 from movie_catalog.forms import ReviewForm, RatingForm
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 
 class GenreYear:
@@ -44,12 +35,12 @@ class MovieDetailView(GenreYear, DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         try:
-            current_user_rating = self.object.rating_set.get(ip=get_client_ip(self.request))
+            current_user_rating = self.object.get_current_user_rating(self.request)
             context['current_user_rating'] = current_user_rating.star.value
         except Rating.DoesNotExist:
             context['current_user_rating'] = 0
         context['rating_form'] = RatingForm()
-        context['average_rating'] = context['object'].get_avg_rating_str()
+        context['average_rating'] = self.object.get_avg_rating_str()
         return context
 
 
@@ -60,8 +51,8 @@ class AddRatingStar(View):
         form = RatingForm(request.POST)
         if form.is_valid():
             Rating.objects.update_or_create(
-                ip = get_client_ip(request),
-                movie_id = int(request.POST.get("movie")),
+                ip=get_client_ip(request),
+                movie_id=int(request.POST.get("movie")),
                 defaults={'star_id': int(request.POST.get("star"))}
             )
             return HttpResponse(status=201)
@@ -98,7 +89,7 @@ class MovieFilterView(GenreYear, ListView):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist("year")) |
             Q(genres__in=self.request.GET.getlist("genre"))
-        ).distinct().values("title", "tagline", "slug", "poster")
+        ).distinct()
         return queryset
 
     def get_context_data(self, *args, **kwargs):

@@ -8,6 +8,16 @@ from datetime import date
 from transliterate import translit
 
 
+def get_client_ip(request):
+    """Возвращает ip пользователя через запрос"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
 # Presave signals
 
 def post_save_slug_film(sender, instance, *args, **kwargs):
@@ -165,6 +175,9 @@ class Movie(models.Model):
 
     def get_avg_rating_str(self):
         return "{0:.2f}".format(float(self.get_average_rating()))
+
+    def get_current_user_rating(self, request):
+        return self.rating_set.get(ip=get_client_ip(request))
 
     class Meta:
         verbose_name = "Фильм"
