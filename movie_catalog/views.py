@@ -33,18 +33,23 @@ class MovieListView(GenreYear, ListView):
     """Список фильмов"""
     model = Movie
     queryset = Movie.objects.filter(draft=False)
+    paginate_by = 1
 
 
 class MovieDetailView(GenreYear, DetailView):
     """Описание фильма"""
     model = Movie
+    queryset = Movie.objects.filter(draft=False)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        current_user_rating = self.object.rating_set.get(ip=get_client_ip(self.request))
+        try:
+            current_user_rating = self.object.rating_set.get(ip=get_client_ip(self.request))
+            context['current_user_rating'] = current_user_rating.star.value
+        except Rating.DoesNotExist:
+            context['current_user_rating'] = 0
         context['rating_form'] = RatingForm()
-        context['average_rating'] = "{0:.2f}".format(current_user_rating.get_average_rating())
-        context['current_user_rating'] = current_user_rating.star.value
+        context['average_rating'] = context['object'].get_avg_rating_str()
         return context
 
 
@@ -64,7 +69,6 @@ class AddRatingStar(View):
             return HttpResponse(status=400)
 
 
-
 class AddReview(View):
     """Отправка формы отзыва."""
 
@@ -78,7 +82,6 @@ class AddReview(View):
             if parent:
                 form.parent_id = parent
             form.save()
-        print(request.POST)
         return redirect(movie.get_absolute_url())
 
 
@@ -89,13 +92,20 @@ class PersonDetailView(DetailView):
 
 class MovieFilterView(GenreYear, ListView):
     """Фильтр для фильмов по году и жанру"""
+    paginate_by = 1
 
     def get_queryset(self):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist("year")) |
             Q(genres__in=self.request.GET.getlist("genre"))
-        )
+        ).distinct().values("title", "tagline", "slug", "poster")
         return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["year"] = ''.join([f"year={x}&" for x in self.request.GET.getlist("year")])
+        context["genre"] = ''.join([f"genre={x}&" for x in self.request.GET.getlist("genre")])
+        return context
 
 
 class JsonMovieFilterView(ListView):

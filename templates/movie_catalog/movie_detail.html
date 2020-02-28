@@ -195,5 +195,25 @@ function addReview(name, id) {
 	document.getElementById("contactparent").value = id;
 	document.getElementById("contactcomment").innerText = `${name}, `;
 }
+
+// Add star rating
+const ratingForm = document.querySelector('form[name=rating]');
+const currentRating = document.querySelector('#currentRating');
+
+ratingForm.addEventListener("change", function (e) {
+    // Получаем данные из формы
+    let data = new FormData(this);
+    fetch(`${this.action}`, {
+        method: 'POST',
+        body: data
+    })
+    .then(
+        response => {
+            currentRating.innerText = `(${e.target.value}.00)`;
+            alert("Рейтинг установлен");
+        }
+    )
+    .catch(error => alert("Ошибка"))
+});
 </script>
 {% endblock movie %}

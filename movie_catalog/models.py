@@ -158,6 +158,14 @@ class Movie(models.Model):
     def get_reviews(self):
         return self.reviews_set.filter(parent__isnull=True)
 
+    def get_average_rating(self):
+        """Возвразает среднее значение рейтинга для фильма"""
+        avg = self.rating_set.all().aggregate(models.Avg('star__value'))['star__value__avg']
+        return avg
+
+    def get_avg_rating_str(self):
+        return "{0:.2f}".format(float(self.get_average_rating()))
+
     class Meta:
         verbose_name = "Фильм"
         verbose_name_plural = "Фильмы"
@@ -191,6 +199,7 @@ class RatingStars(models.Model):
     class Meta:
         verbose_name = "Звезда рейтинга"
         verbose_name_plural = "Звезды рейтинга"
+        ordering = ("-value",)
 
 
 class Rating(models.Model):
@@ -201,9 +210,6 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.movie} - {self.star}"
-
-    def get_average_rating(self):
-        return Rating.objects.all().aggregate(models.Avg('star__value'))['star__value__avg']
 
     class Meta:
         verbose_name = "Рейтинг"

@@ -11,15 +11,15 @@ function ajaxSend(url, params) {
         .catch(error => console.error(error))
 }
 
-const form = document.querySelector('form[name=movie-filter]');
-
-form.addEventListener('submit', function (e) {
-    // Получаем данные из формы
-    e.preventDefault();
-    let url = this.action;
-    let params = new URLSearchParams(new FormData(this)).toString();
-    ajaxSend(url, params);
-});
+//const form = document.querySelector('form[name=movie-filter]');
+//
+//form.addEventListener('submit', function (e) {
+//    // Получаем данные из формы
+//    e.preventDefault();
+//    let url = this.action;
+//    let params = new URLSearchParams(new FormData(this)).toString();
+//    ajaxSend(url, params);
+//});
 
 function render(data) {
     // Рендер шаблона
@@ -59,24 +59,3 @@ let html = '\
     </div>\
 {{/movies}}'
 
-
-// Add star rating
-const ratingForm = document.querySelector('form[name=rating]');
-const currentRating = document.querySelector('#currentRating');
-console.log(currentRating, '');
-
-ratingForm.addEventListener("change", function (e) {
-    // Получаем данные из формы
-    let data = new FormData(this);
-    fetch(`${this.action}`, {
-        method: 'POST',
-        body: data
-    })
-    .then(
-        response => {console.log('hi');
-        alert("Рейтинг установлен");
-        console.log(currentRating, '');
-        currentRating.innerText(`hi.0`);}
-    )
-    .catch(error => alert("Ошибка"))
-});
