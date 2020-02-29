@@ -17,30 +17,31 @@ class GenreYear:
 
     def get_genre_list(self):
         """Отдает список жанров фильмов"""
-        return Genre.objects.all().distinct().order_by("name")
+        return Genre.objects.all().only("name").distinct().order_by("name")
 
 
 class MovieListView(GenreYear, ListView):
     """Список фильмов"""
     model = Movie
-    queryset = Movie.objects.filter(draft=False)
+    queryset = Movie.objects.only("id", "title", "tagline", "slug", "poster").filter(draft=False)
     paginate_by = 1
 
 
 class MovieDetailView(GenreYear, DetailView):
     """Описание фильма"""
     model = Movie
-    queryset = Movie.objects.filter(draft=False)
+    queryset = Movie.objects.select_related().filter(draft=False)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         try:
             current_user_rating = self.object.get_current_user_rating(self.request)
             context['current_user_rating'] = current_user_rating.star.value
+            context['average_rating'] = self.object.get_avg_rating_str()
         except Rating.DoesNotExist:
             context['current_user_rating'] = 0
+            context['average_rating'] = "0.00"
         context['rating_form'] = RatingForm()
-        context['average_rating'] = self.object.get_avg_rating_str()
         return context
 
 
@@ -69,9 +70,11 @@ class AddReview(View):
         if form.is_valid():
             form = form.save(commit=False)
             form.movie_id = pk
-            parent = int(request.POST.get("parent", None))
-            if parent:
+            try:
+                parent = int(request.POST.get("parent", None))
                 form.parent_id = parent
+            except ValueError:
+                pass
             form.save()
         return redirect(movie.get_absolute_url())
 
@@ -83,13 +86,14 @@ class PersonDetailView(DetailView):
 
 class MovieFilterView(GenreYear, ListView):
     """Фильтр для фильмов по году и жанру"""
-    paginate_by = 1
+    paginate_by = 3
 
     def get_queryset(self):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist("year")) |
-            Q(genres__in=self.request.GET.getlist("genre"))
-        ).distinct()
+            Q(genres__in=self.request.GET.getlist("genre")) &
+            Q(draft=False)
+        ).distinct().only("id", "title", "tagline", "slug", "poster").order_by("-id")
         return queryset
 
     def get_context_data(self, *args, **kwargs):
@@ -105,7 +109,7 @@ class JsonMovieFilterView(ListView):
         queryset = Movie.objects.filter(
             Q(year__in=self.request.GET.getlist("year")) |
             Q(genres__in=self.request.GET.getlist("genre"))
-        ).distinct().values("title", "tagline", "slug", "poster")
+        ).distinct().values("title", "tagline", "slug", "poster").filter(draft=False)
         return queryset
 
     def get(self, request, *args, **kwargs):

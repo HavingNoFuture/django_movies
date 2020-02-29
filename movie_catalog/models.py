@@ -170,7 +170,7 @@ class Movie(models.Model):
 
     def get_average_rating(self):
         """Возвразает среднее значение рейтинга для фильма"""
-        avg = self.rating_set.all().aggregate(models.Avg('star__value'))['star__value__avg']
+        avg = self.rating_set.select_related().aggregate(models.Avg('star__value'))['star__value__avg']
         return avg
 
     def get_avg_rating_str(self):
