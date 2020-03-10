@@ -42,6 +42,7 @@ class MovieDetailView(GenreYear, DetailView):
             context['current_user_rating'] = 0
             context['average_rating'] = "0.00"
         context['rating_form'] = RatingForm()
+        context['review_form'] = ReviewForm()
         return context
 
 
@@ -67,8 +68,11 @@ class AddReview(View):
     def post(self, request, pk):
         form = ReviewForm(request.POST)
         movie = Movie.objects.get(pk=pk)
+        print('hi')
         if form.is_valid():
+            print('valid')
             form = form.save(commit=False)
+            print(form.text)
             form.movie_id = pk
             try:
                 parent = int(request.POST.get("parent", None))
