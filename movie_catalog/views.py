@@ -6,6 +6,7 @@ from django.views.generic.base import View
 
 from movie_catalog.models import Movie, Person, Genre, Rating, get_client_ip
 from movie_catalog.forms import ReviewForm, RatingForm
+from movie_catalog.tasks import send
 
 
 class GenreYear:

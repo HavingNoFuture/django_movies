@@ -13,3 +13,5 @@ six==1.13.0
 sqlparse==0.3.0
 transliterate==1.10.2
 urllib3==1.25.8
+celery==4.4.1
+redis==3.4.1
