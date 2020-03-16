@@ -16,14 +16,17 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 from django.urls import path, include
 
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='movies/')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('movies/', include('movie_catalog.urls')),
+    path('contact/', include('contact.urls')),
 ]
 
 if settings.DEBUG:

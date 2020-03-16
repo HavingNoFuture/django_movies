@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'movies',
     'movie_catalog',
+    'contact',
 ]
 
 MIDDLEWARE = [
