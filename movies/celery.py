@@ -16,8 +16,8 @@ app.autodiscover_tasks()
 
 
 app.conf.beat_schedule = {
-    'send-spam-every-5-min': {
-        'task': 'movie_catalog.tasks.send_email',
-        'schedule': crontab(minute='*/5'),
+    'send-email-every-midnight': {
+        'task': 'contact.tasks.send_beat_email',
+        'schedule': crontab(minute=0, hour=0),
     },
 }
