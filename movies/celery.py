@@ -1,5 +1,7 @@
 import os
 from celery import Celery
+from celery.schedules import crontab
+
 from django.conf import settings
 
 # Где находятся настройки джанго
@@ -11,3 +13,11 @@ app = Celery('movies', broker=settings.BROKER_URL)
 # Чтобы celery спарсил настройки из settings через CELERY_
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
+
+app.conf.beat_schedule = {
+    'send-spam-every-5-min': {
+        'task': 'movie_catalog.tasks.send_email',
+        'schedule': crontab(minute='*/5'),
+    },
+}

@@ -14,3 +14,7 @@ venv/
 ### Project specific ###
 settings_local.py
 */silk/*
+
+### celery ###
+celerybeat-schedule
+celerybeat.pid
