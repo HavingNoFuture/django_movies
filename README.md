@@ -12,6 +12,7 @@
 * Пагинация фильмов.
 * Использование Google reCaptcha v3.
 * Использование Celery для отправки email с помощью Gmail SMTP.
+* Мультиязычность при помощи django-modeltranslation.
 
 Использованные технологии:
 * Python 3.6

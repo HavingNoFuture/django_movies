@@ -3,12 +3,14 @@ from django.utils.safestring import mark_safe
 from django import forms
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from modeltranslation.admin import TranslationAdmin
 
 from movie_catalog.models import Person, Genre, Category, Movie, MovieShots, RatingStars, Rating, Reviews, Country
 
 
 class MovieAdminForm(forms.ModelForm):
-    description = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
+    description_ru = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
+    description_en = forms.CharField(label="Description", widget=CKEditorUploadingWidget())
 
     class Meta:
         model = Movie
@@ -16,7 +18,7 @@ class MovieAdminForm(forms.ModelForm):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(TranslationAdmin):
     list_display = ("id", "name", "url")
     list_display_links = ("name", "id")
 
@@ -39,7 +41,7 @@ class MovieShotsInline(admin.TabularInline):
 
 
 @admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
+class MovieAdmin(TranslationAdmin):
     list_display = ("id", "title", "get_image", "category", "year", "draft")
     list_display_links = ("title", "id")
     list_filter = ("category", "year")
@@ -107,7 +109,7 @@ class MovieAdmin(admin.ModelAdmin):
 
 
 @admin.register(Reviews)
-class RewievsAdmin(admin.ModelAdmin):
+class ReviewsAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "email", "parent", "movie")
     list_display_links = ("name", "email", "id")
     list_filter = ("movie", "email", "parent")
@@ -116,7 +118,7 @@ class RewievsAdmin(admin.ModelAdmin):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(TranslationAdmin):
     list_display = ("id", "first_name", "last_name", "second_name", "get_age", "get_image")
     list_display_links = ("last_name", "first_name", "id")
     search_fields = ("first_name", "last_name", "second_name")
@@ -129,14 +131,14 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 @admin.register(Genre)
-class GenreAdmin(admin.ModelAdmin):
+class GenreAdmin(TranslationAdmin):
     list_display = ("id", "name", "url")
     list_display_links = ("name", "id")
     search_fields = ("name", )
 
 
 @admin.register(MovieShots)
-class MovieShotsAdmin(admin.ModelAdmin):
+class MovieShotsAdmin(TranslationAdmin):
     list_display = ("id", "title", "movie", )
     list_display_links = ("title", "id")
     list_filter = ("movie__title", )
