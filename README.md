@@ -13,6 +13,7 @@
 * Использование Google reCaptcha v3.
 * Использование Celery для отправки email с помощью Gmail SMTP.
 * Мультиязычность при помощи django-modeltranslation.
+* Аутентификация - django-allauth.
 
 Использованные технологии:
 * Python 3.6
