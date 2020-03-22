@@ -42,6 +42,8 @@ INSTALLED_APPS = [
 
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.vk',
     'snowpenguin.django.recaptcha3',
     'ckeditor',
     'ckeditor_uploader',
