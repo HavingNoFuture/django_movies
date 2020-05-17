@@ -14,6 +14,7 @@
 * Использование Celery для отправки email с помощью Gmail SMTP.
 * Мультиязычность при помощи django-modeltranslation.
 * Аутентификация - django-allauth.
+* Авторизация через VK.
 
 Использованные технологии:
 * Python 3.6
