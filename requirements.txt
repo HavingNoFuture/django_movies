@@ -12,7 +12,7 @@ requests==2.23.0
 six==1.13.0
 sqlparse==0.3.0
 transliterate==1.10.2
-urllib3==1.25.8
+urllib3==1.26.5
 celery==4.4.1
 redis==3.4.1
 django-modeltranslation==0.14.4
